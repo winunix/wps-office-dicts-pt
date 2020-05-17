@@ -1,0 +1,20 @@
+#!/bin/bash
+
+# Get Names of users
+cat /etc/passwd | grep '/home/' | \
+grep -v 'cups\|syslog' | cut -d ':' -f 1 > /tmp/homes.list
+
+# Run each user
+function runByUsers {
+	confPath="$1/.config/Kingsoft/"
+	mkdir -p $confPath
+	cp /tmp/wps-office-dicts-pt/Office.conf $confPath
+	chown $2.$2 -R $confPath
+	chmod 764 -R $confPath
+}
+
+# Run all users
+while read USUARIO; do
+	runByUsers "/home/$USUARIO" "$USUARIO"
+done < /tmp/homes.list
+runByUsers "/etc/skel" "root"
